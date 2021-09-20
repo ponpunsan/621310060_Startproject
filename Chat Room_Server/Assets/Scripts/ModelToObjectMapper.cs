@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class ModelToObjectMapper
 {
+    private ServerController serverController;
+
     private Dictionary<string, Action<PeerConnection, JObject>> Deserializes;
 
     private Dictionary<string, Action<PeerConnection, JObject>> CreateDeserializes() => new Dictionary<string, Action<PeerConnection, JObject>>
@@ -13,9 +15,10 @@ public class ModelToObjectMapper
         [MessageModel.CLASS_NAME] = OnReceivedMessage,
     };
 
-    public ModelToObjectMapper()
+    public ModelToObjectMapper(ServerController serverController)
     {
         Deserializes = CreateDeserializes();
+        this.serverController = serverController;
     }
 
     public void DeserializeToFunction(NetPeer peer, string json)
@@ -30,8 +33,8 @@ public class ModelToObjectMapper
     }
     private void OnReceivedMessage(PeerConnection peerConnection, JObject jObject)
     {
-        //TODO
         var model = jObject.ToObject<MessageModel>();
-        Debug.Log(model.sender + ":" + model.message);
+        serverController.updateMsgToAllClient(model);
     }
+
 }

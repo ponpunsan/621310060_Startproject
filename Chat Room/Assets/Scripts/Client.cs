@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using UnityEngine;
 using Newtonsoft.Json;
 
+
 public class Client : MonoBehaviour, INetEventListener
 {
     [SerializeField] private ClientController clientController;
@@ -16,6 +17,7 @@ public class Client : MonoBehaviour, INetEventListener
     private NetPeer peer;
     private string host = "localhost";
     private short port = 9050;
+    private ModelToObjectMapper modelToObjectMapper;
     private void Awake()
     {
         Debug.Log("Awake");
@@ -26,6 +28,7 @@ public class Client : MonoBehaviour, INetEventListener
     private void Start()
     {
         clientController.StartChat();
+        modelToObjectMapper = new ModelToObjectMapper(clientController);
     }
     private void Update()
     {
@@ -40,7 +43,10 @@ public class Client : MonoBehaviour, INetEventListener
     public void OnConnectionRequest(ConnectionRequest request) => Debug.Log("OnConnectionRequest");
     public void OnNetworkError(IPEndPoint endPoint, SocketError socketError) => Debug.Log("OnNetworkError");
     public void OnNetworkLatencyUpdate(NetPeer peer, int latency) { }
-    public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod) => Debug.Log("OnNetworkReceive");
+    public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod)
+    {
+        modelToObjectMapper.DeserializeToFunction(reader.GetString());
+    }
     public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) => Debug.Log("OnNetworkReceiveUnconnected");
     public void OnPeerConnected(NetPeer peer)
     {

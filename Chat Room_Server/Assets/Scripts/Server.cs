@@ -26,7 +26,7 @@ public class Server : MonoBehaviour, INetEventListener
     }
     private void Start()
     {
-        modelToObjectMapper = new ModelToObjectMapper();
+        modelToObjectMapper = new ModelToObjectMapper(serverController);
     }
 
     private void Update()
